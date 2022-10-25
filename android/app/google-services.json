@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "374223369124",
+    "project_id": "pusherdemo-ce5b5",
+    "storage_bucket": "pusherdemo-ce5b5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:374223369124:android:94d8e8d15af04e55308731",
+        "android_client_info": {
+          "package_name": "com.shatanik.pusher_demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "374223369124-b6lmi666lq14f5jo093cevn84fhojemf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAYG3XGILv4YlOrr8D8S5QtSU19DEiu2S8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "374223369124-b6lmi666lq14f5jo093cevn84fhojemf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

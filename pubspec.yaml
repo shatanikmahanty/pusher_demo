@@ -1,0 +1,39 @@
+name: pusher_demo
+description: A new Flutter project.
+
+publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=2.18.2 <3.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  pusher_channels_flutter: ^2.0.2
+  provider: ^6.0.4
+  firebase_core: ^2.0.0
+  cloud_firestore: ^4.0.1
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^2.0.0
+
+flutter:
+
+  uses-material-design: true
+
+  assets:
+    - assets/images/
+
+  fonts:
+    - family: PublicSans
+      fonts:
+        - asset: assets/fonts/PublicSans_Regular.otf
+        - asset: assets/fonts/PublicSans_ExtraBold.otf
+          weight: 700
+        - asset: assets/fonts/PublicSans_Bold.otf
+          weight: 500

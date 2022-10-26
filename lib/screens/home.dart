@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:pusher_demo/blocs/channel_bloc.dart';
+import 'package:pusher_demo/utils/new_space_dialog.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -109,6 +110,9 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.zero,
                     itemBuilder: (BuildContext context, int index) {
                       String channelId = cb.allSpaces[index]["id"];
+                      Map<String, dynamic> space = cb.allSpaces[index];
+                      bool isJoinedSpace =
+                          cb.joinedChannelsMap.containsKey(channelId);
                       return Card(
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(20),
@@ -125,7 +129,7 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                cb.allSpaces[index]["name"],
+                                space["name"],
                                 style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.white,
@@ -137,15 +141,14 @@ class _HomePageState extends State<HomePage> {
                                 height: 20,
                               ),
                               Text(
-                                cb.allSpaces[index]["description"],
+                                space["description"],
                                 style: const TextStyle(
                                   fontFamily: "PublicSans",
                                   color: Colors.white,
                                   fontSize: 20,
                                 ),
                               ),
-                              if (cb.joinedChannelsMap
-                                  .containsKey(channelId)) ...[
+                              if (isJoinedSpace) ...[
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -183,17 +186,14 @@ class _HomePageState extends State<HomePage> {
                                     ),
                                   ),
                                   onPressed: () {
-                                    if (cb.joinedChannelsMap
-                                        .containsKey(channelId)) {
+                                    if (isJoinedSpace) {
                                       cb.disconnectFromChannel(channelId);
                                     } else {
                                       cb.joinChannel(channelId);
                                     }
                                   },
                                   child: Text(
-                                    cb.joinedChannelsMap.containsKey(channelId)
-                                        ? "Disconnect"
-                                        : "Join",
+                                    isJoinedSpace ? "Disconnect" : "Join",
                                     style: const TextStyle(
                                       fontFamily: "PublicSans",
                                       color: Colors.white,
@@ -221,142 +221,11 @@ class _HomePageState extends State<HomePage> {
           showDialog(
               context: context,
               builder: (context) {
-                return Dialog(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  backgroundColor: const Color(0xff191c26),
-                  child: Container(
-                    height: 400,
-                    width: size.width * 0.8,
-                    padding: const EdgeInsets.all(30),
-                    child: Column(
-                      children: [
-                        const Text(
-                          "Create Space",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Colors.white,
-                            fontFamily: "PublicSans",
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 40,
-                        ),
-                        TextFormField(
-                          controller: _nameCtrl,
-                          decoration: InputDecoration(
-                            labelText: "Name",
-                            hintText: "Enter Name",
-                            hintStyle: const TextStyle(
-                              fontFamily: "GoogleSans",
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                width: 0.2,
-                                color: Colors.black,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                width: 2,
-                                color: Colors.blueGrey,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(
-                          height: 30,
-                        ),
-                        TextFormField(
-                          controller: _descriptionCtrl,
-                          decoration: InputDecoration(
-                            labelText: "Description",
-                            hintText: "Enter Description",
-                            hintStyle: const TextStyle(
-                              fontFamily: "GoogleSans",
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                width: 0.2,
-                                color: Colors.black,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                width: 2,
-                                color: Colors.blueGrey,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const Spacer(),
-                        SizedBox(
-                          height: 60,
-                          width: size.width,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xff3b3b3b),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                            ),
-                            onPressed: () {
-                              if (_nameCtrl.text.isNotEmpty &&
-                                  _descriptionCtrl.text.isNotEmpty) {
-                                cb.createSpace(
-                                  _nameCtrl.text,
-                                  _descriptionCtrl.text,
-                                );
-                                _nameCtrl.clear();
-                                _descriptionCtrl.clear();
-                                Navigator.pop(context);
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      "Please enter the details",
-                                      style: TextStyle(
-                                        fontFamily: "PublicSans",
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                            child: cb.isSpaceCreationInProgress
-                                ? const Center(
-                                    child: CircularProgressIndicator(),
-                                  )
-                                : const Text(
-                                    "Create",
-                                    style: TextStyle(
-                                      fontFamily: "PublicSans",
-                                      color: Colors.white,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                    ),
-                                  ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                return NewSpaceDialog(
+                  size: size,
+                  nameCtrl: _nameCtrl,
+                  descriptionCtrl: _descriptionCtrl,
+                  cb: cb,
                 );
               });
         },

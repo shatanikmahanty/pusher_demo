@@ -38,7 +38,7 @@ Add the above dependencies to your pubspec.yaml file. (You can use the given ver
 Setting up the app
 ------------------
 
-Create a new Flutter Project, “pusher\_demo”
+Create a new Flutter Project, `pusher_demo`
 
 Remove the code for the counter app until you only remain with a Scaffold with a home (We will be creating this later in this tutorial).
 
@@ -95,23 +95,17 @@ Go to [https://dashboard.pusher.com/](https://dashboard.pusher.com/) and create 
 
 Create an app from [https://dashboard.pusher.com/apps](https://dashboard.pusher.com/apps). You will be presented with an interface similar to this. Give your app a name and select a cluster.
 
-![image](https://user-images.githubusercontent.com/67138059/218485164-ab0510c8-e96d-474b-9bcb-28ef88ec0535.png)
-
-Pusher app creation dialog
+![Pusher app creation dialog](https://user-images.githubusercontent.com/67138059/218485164-ab0510c8-e96d-474b-9bcb-28ef88ec0535.png)
 
 Click Create app.
 
 You will see your app listed. Click on it to view details. You will be presented with an overview of your app. Click on the App Keys option. Generate a new key in case you don’t have one.
 
-![image](https://user-images.githubusercontent.com/67138059/218485236-1f66de0a-b2a1-4f83-b76d-6752ed8638c0.png)
-
-Demo pusher app dashboard
+![Demo pusher app dashboard](https://user-images.githubusercontent.com/67138059/218485236-1f66de0a-b2a1-4f83-b76d-6752ed8638c0.png)
 
 Go to App settings and enable the below-mentioned options.
 
-![image](https://user-images.githubusercontent.com/67138059/218485314-7025b957-b207-41dd-a2f3-821244a2c250.png)
-
-Enable required options
+![Enable required options](https://user-images.githubusercontent.com/67138059/218485314-7025b957-b207-41dd-a2f3-821244a2c250.png)
 
 Once you have the key, you are ready to integrate Pusher with Flutter.
 
@@ -129,7 +123,7 @@ Let’s create a method to configure Pusher.
 
 We will be creating a PusherChannelsFlutter object. replace `YOUR_API_KEY` and `CLUSTER` with the values obtained in the previous step.
 
-```
+``` dart
 import 'dart:async';  
 import 'package:cloud_firestore/cloud_firestore.dart';  
 import 'package:flutter/cupertino.dart';  
@@ -167,7 +161,7 @@ We also create a loading indicator variable `_isLoading` so that we can notify u
 > 
 > Tip for optimization: You can create a logic that fetches only popular spaces and let the rest of the channels be accessible using a code.
 
-```dart
+``` dart
 class ChannelBloc extends ChangeNotifier {  
   List<Map<String, dynamic>> _allSpaces = [];  
   
@@ -221,7 +215,7 @@ Using `event.data` provides us with the data given by the event. In this case, t
 
 For disconnecting, we just need to call unsubscribe and remove the channel from \_joinedChannelsMap.
 
-```dart
+``` dart
 final Map<String, int> _joinedChannelsMap = {};  
   
 Map<String, int> get joinedChannelsMap => _joinedChannelsMap;Future joinChannel(String channelId) async {  
@@ -263,7 +257,7 @@ Next, we write the logic for creating a channel. Pusher channels don’t need to
 
 We use _isSpaceCreationInProgress to update the UI while calling this function from UI.
 
-```
+``` dart
 bool _isSpaceCreationInProgress = false;  
   
 bool get isSpaceCreationInProgress => _isSpaceCreationInProgress;Future createSpace(String name,String description) async {  
@@ -284,7 +278,7 @@ bool get isSpaceCreationInProgress => _isSpaceCreationInProgress;Future createSp
 
 > That completes the business logic. To make it usable we need to register it in `main.dart`.
 
-```dart
+``` dart
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
 import 'package:firebase_core/firebase_core.dart';  
@@ -336,7 +330,7 @@ Individual elements of the list view allow the user to join using the join butto
 
 We also declare two TextEditingController for the dialog that we pass to the dialog class.
 
-```dart
+``` dart
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
 import 'package:pusher_demo/blocs/channel_bloc.dart';  
@@ -569,7 +563,7 @@ class _HomePageState extends State<HomePage> {
           );  
         },  
        child: const Icon(  
-         Icons._add_,  
+         Icons.add,  
        ),  
      ),     
   );
@@ -577,9 +571,9 @@ class _HomePageState extends State<HomePage> {
 
 All we are left with now is the dialog for the creation of spaces. We will create a new stateless widget for this to keep the code clean.
 
-```
+``` dart
 import 'package:flutter/material.dart';  
-import 'package:pusher\_demo/blocs/channel\_bloc.dart';  
+import 'package:pusher_demo/blocs/channel_bloc.dart';  
   
 class NewSpaceDialog extends StatelessWidget {  
   final Size size;  
@@ -605,17 +599,17 @@ class NewSpaceDialog extends StatelessWidget {
       backgroundColor: const Color(0xff191c26),  
       child: Container(  
         height: 400,  
-        width: size.width \* 0.8,  
+        width: size.width * 0.8,  
         padding: const EdgeInsets.all(30),  
         child: Column(  
-          children: \[  
+          children: [  
             const Text(  
               "Create Space",  
               style: TextStyle(  
                 fontSize: 20,  
-                color: Colors._white_,  
+                color: Colors.white,  
                 fontFamily: "PublicSans",  
-                fontWeight: FontWeight._bold_,  
+                fontWeight: FontWeight.bold,  
               ),  
             ),  
             const SizedBox(  
@@ -635,7 +629,7 @@ class NewSpaceDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),  
                   borderSide: const BorderSide(  
                     width: 0.2,  
-                    color: Colors._black_,  
+                    color: Colors.black,  
                     style: BorderStyle.solid,  
                   ),  
                 ),  
@@ -643,7 +637,7 @@ class NewSpaceDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),  
                   borderSide: const BorderSide(  
                     width: 2,  
-                    color: Colors._blueGrey_,  
+                    color: Colors.blueGrey,  
                     style: BorderStyle.solid,  
                   ),  
                 ),  
@@ -661,12 +655,12 @@ class NewSpaceDialog extends StatelessWidget {
                   fontFamily: "GoogleSans",  
                 ),  
                 filled: true,  
-                fillColor: Colors._white_,  
+                fillColor: Colors.white,  
                 enabledBorder: OutlineInputBorder(  
                   borderRadius: BorderRadius.circular(12),  
                   borderSide: const BorderSide(  
                     width: 0.2,  
-                    color: Colors._black_,  
+                    color: Colors.black,  
                     style: BorderStyle.solid,  
                   ),  
                 ),  
@@ -674,7 +668,7 @@ class NewSpaceDialog extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),  
                   borderSide: const BorderSide(  
                     width: 2,  
-                    color: Colors._blueGrey_,  
+                    color: Colors.blueGrey,  
                     style: BorderStyle.solid,  
                   ),  
                 ),  
@@ -685,7 +679,7 @@ class NewSpaceDialog extends StatelessWidget {
               height: 60,  
               width: size.width,  
               child: ElevatedButton(  
-                style: ElevatedButton._styleFrom_(  
+                style: ElevatedButton.styleFrom(  
                   backgroundColor: const Color(0xff3b3b3b),  
                   shape: RoundedRectangleBorder(  
                     borderRadius: BorderRadius.circular(20),  
@@ -700,7 +694,7 @@ class NewSpaceDialog extends StatelessWidget {
                     );  
                     nameCtrl.clear();  
                     descriptionCtrl.clear();  
-                    Navigator._pop_(context);  
+                    Navigator.pop(context);  
                   } else {  
                     ScaffoldMessenger._of_(context).showSnackBar(  
                       const SnackBar(  
@@ -708,7 +702,7 @@ class NewSpaceDialog extends StatelessWidget {
                           "Please enter the details",  
                           style: TextStyle(  
                             fontFamily: "PublicSans",  
-                            color: Colors._white_,  
+                            color: Colors.white,  
                             fontSize: 18,  
                           ),  
                         ),  
@@ -724,8 +718,8 @@ class NewSpaceDialog extends StatelessWidget {
                         "Create",  
                         style: TextStyle(  
                           fontFamily: "PublicSans",  
-                          color: Colors._white_,  
-                          fontWeight: FontWeight._bold_,  
+                          color: Colors.white,  
+                          fontWeight: FontWeight.bold,  
                           fontSize: 18,  
                         ),  
                       ),  

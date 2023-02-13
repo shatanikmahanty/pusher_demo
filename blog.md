@@ -1,11 +1,3 @@
-[![Shatanik Mahanty](https://miro.medium.com/fit/c/96/96/1*knnazYO289Gw9q1yQ4dYNA.png)
-
-](https://medium.com/@shatanikmahanty?source=post_page-----5f4c97d46151--------------------------------)[Shatanik Mahanty](https://medium.com/@shatanikmahanty?source=post_page-----5f4c97d46151--------------------------------)Follow
-
-Oct 26, 2022
-
-·10 min read
-
 Flutter: Realtime Participants Counter
 ======================================
 
@@ -31,11 +23,11 @@ Pusher is a platform that helps create powerful real-time experiences for mobile
 
 To get started we will need to set up a few dependencies:
 
-```
-pusher\_channels\_flutter: ^2.0.2  #For interacting with pusher  
+``` yaml
+pusher_channels_flutter: ^2.0.2  #For interacting with pusher  
 provider: ^6.0.4   #For using provide architecture  
-firebase\_core: ^2.0.0   #For initializing firebase in flutter app  
-cloud\_firestore: ^4.0.1 #For accessing Cloud Firestore
+firebase_core: ^2.0.0   #For initializing firebase in flutter app  
+cloud_firestore: ^4.0.1 #For accessing Cloud Firestore
 ```
 
 Add the above dependencies to your pubspec.yaml file. (You can use the given version or the latest one from [pub.dev](https://pub.dev/)).
@@ -50,9 +42,9 @@ Create a new Flutter Project, “pusher\_demo”
 
 Remove the code for the counter app until you only remain with a Scaffold with a home (We will be creating this later in this tutorial).
 
-```
+``` dart
 import 'package:flutter/material.dart';  
-import 'package:pusher\_demo/screens/home.dart';  
+import 'package:pusher_demo/screens/home.dart';  
   
 void main() {  
   runApp(const MyApp());  
@@ -78,7 +70,7 @@ For this step follow the official firebase guide on how to set up firebase for f
 
 Initialize the firebase app in the `main()`function.
 
-```
+``` dart
 void main() async {  
   WidgetsFlutterBinding._ensureInitialized_();  
   
@@ -88,8 +80,9 @@ void main() async {
 }  
   
 Future configureApp() async {  
-  _///Initialising firebase app  
-  ///so that all firebase services can be used_ if (Firebase._apps_.isEmpty) await Firebase._initializeApp_();  
+  ///Initialising firebase app  
+  ///so that all firebase services can be used
+  if (Firebase.apps.isEmpty) await Firebase.initializeApp();  
 }
 ```
 
@@ -102,15 +95,21 @@ Go to [https://dashboard.pusher.com/](https://dashboard.pusher.com/) and create 
 
 Create an app from [https://dashboard.pusher.com/apps](https://dashboard.pusher.com/apps). You will be presented with an interface similar to this. Give your app a name and select a cluster.
 
+![image](https://user-images.githubusercontent.com/67138059/218485164-ab0510c8-e96d-474b-9bcb-28ef88ec0535.png)
+
 Pusher app creation dialog
 
 Click Create app.
 
 You will see your app listed. Click on it to view details. You will be presented with an overview of your app. Click on the App Keys option. Generate a new key in case you don’t have one.
 
+![image](https://user-images.githubusercontent.com/67138059/218485236-1f66de0a-b2a1-4f83-b76d-6752ed8638c0.png)
+
 Demo pusher app dashboard
 
 Go to App settings and enable the below-mentioned options.
+
+![image](https://user-images.githubusercontent.com/67138059/218485314-7025b957-b207-41dd-a2f3-821244a2c250.png)
 
 Enable required options
 
@@ -132,11 +131,13 @@ We will be creating a PusherChannelsFlutter object. replace `YOUR_API_KEY` and `
 
 ```
 import 'dart:async';  
-import 'package:cloud\_firestore/cloud\_firestore.dart';  
+import 'package:cloud_firestore/cloud_firestore.dart';  
 import 'package:flutter/cupertino.dart';  
-import 'package:pusher\_channels\_flutter/pusher\_channels\_flutter.dart';  
+import 'package:pusher_channels_flutter/pusher_channels_flutter.dart';  
   
-class ChannelBloc extends ChangeNotifier { late PusherChannelsFlutter pusher; ChannelBloc() {  
+class ChannelBloc extends ChangeNotifier { 
+late PusherChannelsFlutter pusher; 
+ChannelBloc() {  
     configurePusher();  
   }  
   
@@ -144,7 +145,7 @@ class ChannelBloc extends ChangeNotifier { late PusherChannelsFlutter pusher; Ch
     pusher = PusherChannelsFlutter._getInstance_();  
     try {  
       await pusher.init(  
-        apiKey: "YOUR\_API\_KEY",  
+        apiKey: "YOUR_API_KEY",  
         cluster: "CLUSTER",  
       );  
   
@@ -152,7 +153,8 @@ class ChannelBloc extends ChangeNotifier { late PusherChannelsFlutter pusher; Ch
     } catch (e) {  
       print(e);  
     }  
-  }}
+  }
+}
 ```
 
 Next, we will need a way to store details about created channels. This is where Firebase Firestore comes into play. We will add a new method in our ChannelBloc called getAvailableChannels().
@@ -165,19 +167,19 @@ We also create a loading indicator variable `_isLoading` so that we can notify u
 > 
 > Tip for optimization: You can create a logic that fetches only popular spaces and let the rest of the channels be accessible using a code.
 
-```
+```dart
 class ChannelBloc extends ChangeNotifier {  
-  List<Map<String, dynamic>> \_allSpaces = \[\];  
+  List<Map<String, dynamic>> _allSpaces = [];  
   
-  List<Map<String, dynamic>> get allSpaces => \_allSpaces;  
+  List<Map<String, dynamic>> get allSpaces => _allSpaces;  
   
-  StreamSubscription? \_allSpacesSub;  
+  StreamSubscription? _allSpacesSub;  
   
-  StreamSubscription? get allSpacesSub => \_allSpacesSub;  
+  StreamSubscription? get allSpacesSub => _allSpacesSub;  
   
-  bool \_isLoading = false;  
+  bool _isLoading = false;  
   
-  bool get isLoading => \_isLoading;  
+  bool get isLoading => _isLoading;  
   
   late PusherChannelsFlutter pusher;  
   
@@ -192,15 +194,15 @@ class ChannelBloc extends ChangeNotifier {
   
     Stream<QuerySnapshot<Map<String, dynamic>>> stream = reference.snapshots();  
   
-    \_allSpacesSub = stream.listen((querySnapshot) {  
-      \_isLoading = true;  
+    _allSpacesSub = stream.listen((querySnapshot) {  
+      _isLoading = true;  
       notifyListeners();  
-      \_allSpaces = \[\];  
+      _allSpaces = [];  
       for (QueryDocumentSnapshot<Map<String, dynamic>> doc  
           in querySnapshot.docs) {  
-        \_allSpaces.add(doc.data());  
+        _allSpaces.add(doc.data());  
       }  
-      \_isLoading = false;  
+      _isLoading = false;  
       notifyListeners();  
     });  
   }  
@@ -219,21 +221,21 @@ Using `event.data` provides us with the data given by the event. In this case, t
 
 For disconnecting, we just need to call unsubscribe and remove the channel from \_joinedChannelsMap.
 
-```
-final Map<String, int> \_joinedChannelsMap = {};  
+```dart
+final Map<String, int> _joinedChannelsMap = {};  
   
-Map<String, int> get joinedChannelsMap => \_joinedChannelsMap;Future joinChannel(String channelId) async {  
+Map<String, int> get joinedChannelsMap => _joinedChannelsMap;Future joinChannel(String channelId) async {  
   await pusher.subscribe(  
     channelName: channelId,  
     onEvent: (event) {  
-      if (event.eventName == "pusher\_internal:subscription\_count") {  
+      if (event.eventName == "pusher_internal:subscription_count") {  
         String channelName = event.channelName;  
   
-        \_joinedChannelsMap\[channelName\] = int._parse_(event.data  
-            .replaceAll("\\"", "")  
+        _joinedChannelsMap[channelName] = int._parse_(event.data  
+            .replaceAll("\"", "")  
             .replaceAll("{", "")  
             .replaceAll("}", "")  
-            .split(":")\[1\]);  
+            .split(":")[1]);  
   
         notifyListeners();  
       }  
@@ -246,7 +248,7 @@ Future disconnectFromChannel(String channelId) async {
     channelName: channelId,  
   );  
   
-  \_joinedChannelsMap.removeWhere((channelName, count) {  
+  _joinedChannelsMap.removeWhere((channelName, count) {  
     if (channelName == channelId) {  
       return true;  
     } else {  
@@ -259,13 +261,13 @@ Future disconnectFromChannel(String channelId) async {
 
 Next, we write the logic for creating a channel. Pusher channels don’t need to be created explicitly. They are created at the time the first user subscribes. What we will create is the logic for storing the space details in Firebase so that they can be joined later as a pusher channel.
 
-We use \_isSpaceCreationInProgress to update the UI while calling this function from UI.
+We use _isSpaceCreationInProgress to update the UI while calling this function from UI.
 
 ```
-bool \_isSpaceCreationInProgress = false;  
+bool _isSpaceCreationInProgress = false;  
   
-bool get isSpaceCreationInProgress => \_isSpaceCreationInProgress;Future createSpace(String name,String description) async {  
-  \_isSpaceCreationInProgress = true;  
+bool get isSpaceCreationInProgress => _isSpaceCreationInProgress;Future createSpace(String name,String description) async {  
+  _isSpaceCreationInProgress = true;  
   notifyListeners();  
   
   DocumentReference ref = FirebaseFirestore._instance_.collection("spaces").doc();  
@@ -275,19 +277,19 @@ bool get isSpaceCreationInProgress => \_isSpaceCreationInProgress;Future createS
     "id" : ref.id,  
   });  
   
-  \_isSpaceCreationInProgress = false;  
+  _isSpaceCreationInProgress = false;  
   notifyListeners();  
 }
 ```
 
 > That completes the business logic. To make it usable we need to register it in `main.dart`.
 
-```
+```dart
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
-import 'package:firebase\_core/firebase\_core.dart';  
-import 'package:pusher\_demo/blocs/channel\_bloc.dart';  
-import 'package:pusher\_demo/screens/home.dart';  
+import 'package:firebase_core/firebase_core.dart';  
+import 'package:pusher_demo/blocs/channel_bloc.dart';  
+import 'package:pusher_demo/screens/home.dart';  
   
 void main() async {  
   WidgetsFlutterBinding._ensureInitialized_();  
@@ -298,8 +300,9 @@ void main() async {
 }  
   
 Future configureApp() async {  
-  _///Initialising firebase app  
-  ///so that all firebase services can be used_ if (Firebase._apps_.isEmpty) await Firebase._initializeApp_();  
+  ///Initialising firebase app  
+  ///so that all firebase services can be used 
+  if (Firebase._apps_.isEmpty) await Firebase.initializeApp();  
 }  
   
 class MyApp extends StatelessWidget {  
@@ -308,11 +311,11 @@ class MyApp extends StatelessWidget {
   @override  
   Widget build(BuildContext context) {  
     return MultiProvider(  
-      providers: \[  
+      providers: [  
         ChangeNotifierProvider<ChannelBloc>(  
           create: (context) => ChannelBloc(),  
         ),  
-      \],  
+      ],  
       child: const MaterialApp(  
         title: 'Spaces',  
         home: HomePage(),  
@@ -325,7 +328,7 @@ class MyApp extends StatelessWidget {
 
 Now that we have dealt with the business logic we needed, let’s get to coding the UI. Since this project focuses only on the subscription counter we won’t be creating the logic for sending messages in the spaces.
 
-Spaces page UI
+![Spaces page UI](https://user-images.githubusercontent.com/67138059/218485602-7c390c65-8352-4b00-bcda-81d29ef6c22b.png)
 
 For the home page, we will create a list view that shows the currently available rooms and a floating action button that shows a space creation dialog. If the spaces are loading we show CircularProgressIndicator, otherwise, we show the listview.
 
@@ -333,25 +336,26 @@ Individual elements of the list view allow the user to join using the join butto
 
 We also declare two TextEditingController for the dialog that we pass to the dialog class.
 
-```
+```dart
 import 'package:flutter/material.dart';  
 import 'package:provider/provider.dart';  
-import 'package:pusher\_demo/blocs/channel\_bloc.dart';  
-import 'package:pusher\_demo/utils/new\_space\_dialog.dart';class HomePage extends StatefulWidget {  
+import 'package:pusher_demo/blocs/channel_bloc.dart';  
+import 'package:pusher_demo/utils/new_space_dialog.dart';
+class HomePage extends StatefulWidget {  
   const HomePage({Key? key}) : super(key: key);  
   
   @override  
-  State<HomePage> createState() => \_HomePageState();  
+  State<HomePage> createState() => _HomePageState();  
 }  
   
-class \_HomePageState extends State<HomePage> {  
-  final TextEditingController \_nameCtrl = TextEditingController();  
-  final TextEditingController \_descriptionCtrl = TextEditingController();  
+class _HomePageState extends State<HomePage> {  
+  final TextEditingController _nameCtrl = TextEditingController();  
+  final TextEditingController _descriptionCtrl = TextEditingController();  
   
   @override  
   Widget build(BuildContext context) {  
-    ChannelBloc cb = Provider._of_<ChannelBloc>(context);  
-    Size size = MediaQuery._of_(context).size;  
+    ChannelBloc cb = Provider.of<ChannelBloc>(context);  
+    Size size = MediaQuery.of(context).size;  
   
     return Scaffold(  
       backgroundColor: const Color(0xff0c1015),  
@@ -360,205 +364,205 @@ class \_HomePageState extends State<HomePage> {
         shape: const RoundedRectangleBorder(  
            borderRadius: BorderRadius.all(Radius.circular(15.0)),  
         ),  
-        body: cb.isLoading  
-    ? const Center(  
-        child: CircularProgressIndicator(),  
-      )  
-    : Column(  
-        crossAxisAlignment: CrossAxisAlignment.start,  
-        children: \[  
-          Container(  
-            width: size.width,  
-            decoration: const BoxDecoration(  
-              borderRadius: BorderRadius.only(  
-                bottomRight: Radius.circular(30),  
-                bottomLeft: Radius.circular(30),  
-              ),  
-              image: DecorationImage(  
-                image: AssetImage(  
-                  "assets/images/background.jpg",  
+      body: cb.isLoading  
+        ? const Center(  
+            child: CircularProgressIndicator(),  
+          )  
+      : Column(  
+          crossAxisAlignment: CrossAxisAlignment.start,  
+          children: [  
+            Container(  
+              width: size.width,  
+              decoration: const BoxDecoration(  
+                borderRadius: BorderRadius.only(  
+                  bottomRight: Radius.circular(30),  
+                  bottomLeft: Radius.circular(30),  
                 ),  
-                fit: BoxFit.cover,  
-              ),  
-            ),  
-            child: Padding(  
-              padding: const EdgeInsets.fromLTRB(20, 140, 20, 30),  
-              child: Column(  
-                crossAxisAlignment: CrossAxisAlignment.start,  
-                children: const \[  
-                  Text(  
-                    "Explore \\nall spaces",  
-                    style: TextStyle(  
-                      fontWeight: FontWeight._bold_,  
-                      fontSize: 30,  
-                      color: Colors._white_,  
-                      fontFamily: "PublicSans",  
-                    ),  
+                image: DecorationImage(  
+                  image: AssetImage(  
+                    "assets/images/background.jpg",  
                   ),  
-                  SizedBox(  
-                    height: 20,  
-                  ),  
-                  Text(  
-                    "Find your favourite space",  
-                    style: TextStyle(  
-                      fontSize: 15,  
-                      color: Colors._white38_,  
-                      fontFamily: "PublicSans",  
-                    ),  
-                  ),  
-                \],  
-              ),  
-            ),  
-          ),  
-          Padding(  
-            padding: const EdgeInsets.symmetric(  
-              horizontal: 20.0,  
-              vertical: 10,  
-            ),  
-            child: Row(  
-              children: \[  
-                const Text(  
-                  "Available Spaces",  
-                  style: TextStyle(  
-                    fontSize: 20,  
-                    color: Colors._white_,  
-                    fontWeight: FontWeight._bold_,  
-                    fontFamily: "PublicSans",  
-                  ),  
+                  fit: BoxFit.cover,  
                 ),  
-                const Spacer(),  
-                CircleAvatar(  
-                  radius: 20,  
-                  child: Text(  
-                    cb.allSpaces.length.toString(),  
-                    style: const TextStyle(  
+              ),  
+              child: Padding(  
+                padding: const EdgeInsets.fromLTRB(20, 140, 20, 30),  
+                child: Column(  
+                  crossAxisAlignment: CrossAxisAlignment.start,  
+                  children: const [  
+                    Text(  
+                      "Explore \nall spaces",  
+                      style: TextStyle(  
+                        fontWeight: FontWeight.bold,  
+                        fontSize: 30,  
+                        color: Colors.white,  
+                        fontFamily: "PublicSans",  
+                      ),  
+                    ),  
+                    SizedBox(  
+                      height: 20,  
+                    ),  
+                    Text(  
+                      "Find your favourite space",  
+                      style: TextStyle(  
+                        fontSize: 15,  
+                        color: Colors.white38,  
+                        fontFamily: "PublicSans",  
+                      ),  
+                    ),  
+                  ],  
+                ),  
+              ),  
+            ),  
+            Padding(  
+              padding: const EdgeInsets.symmetric(  
+                horizontal: 20.0,  
+                vertical: 10,  
+              ),  
+              child: Row(  
+                children: [  
+                  const Text(  
+                    "Available Spaces",  
+                    style: TextStyle(  
                       fontSize: 20,  
-                      color: Colors._white_,  
+                      color: Colors.white,  
+                      fontWeight: FontWeight.bold,  
                       fontFamily: "PublicSans",  
                     ),  
                   ),  
-                ),  
-              \],  
+                  const Spacer(),  
+                  CircleAvatar(  
+                    radius: 20,  
+                    child: Text(  
+                      cb.allSpaces.length.toString(),  
+                      style: const TextStyle(  
+                        fontSize: 20,  
+                        color: Colors.white,  
+                        fontFamily: "PublicSans",  
+                      ),  
+                    ),  
+                  ),  
+                ],  
+              ),  
             ),  
-          ),  
-          Flexible(  
-            child: ListView.builder(  
-              shrinkWrap: true,  
-              physics: const BouncingScrollPhysics(),  
-              itemCount: cb.allSpaces.length,  
-              padding: EdgeInsets._zero_,  
-              itemBuilder: (BuildContext context, int index) {  
-                String channelId = cb.allSpaces\[index\]\["id"\];  
-                Map<String, dynamic> space = cb.allSpaces\[index\];  
-                bool isJoinedSpace =  
-                    cb.joinedChannelsMap.containsKey(channelId);  
-                return Card(  
-                  shape: RoundedRectangleBorder(  
-                    borderRadius: BorderRadius.circular(20),  
-                  ),  
-                  elevation: 10,  
-                  margin: const EdgeInsets.symmetric(  
-                    horizontal: 20,  
-                    vertical: 10,  
-                  ),  
-                  color: const Color(0xff191c26),  
-                  child: Padding(  
-                    padding: const EdgeInsets.all(25.0),  
-                    child: Column(  
-                      crossAxisAlignment: CrossAxisAlignment.start,  
-                      children: \[  
-                        Text(  
-                          space\["name"\],  
-                          style: const TextStyle(  
-                            fontWeight: FontWeight._bold_,  
-                            color: Colors._white_,  
-                            fontFamily: "PublicSans",  
-                            fontSize: 25,  
+            Flexible(  
+              child: ListView.builder(  
+                shrinkWrap: true,  
+                physics: const BouncingScrollPhysics(),  
+                itemCount: cb.allSpaces.length,  
+                padding: EdgeInsets.zero,  
+                itemBuilder: (BuildContext context, int index) {  
+                  String channelId = cb.allSpaces[index]["id"];  
+                  Map<String, dynamic> space = cb.allSpaces[index];  
+                  bool isJoinedSpace =  
+                      cb.joinedChannelsMap.containsKey(channelId);  
+                  return Card(  
+                    shape: RoundedRectangleBorder(  
+                      borderRadius: BorderRadius.circular(20),  
+                    ),  
+                    elevation: 10,  
+                    margin: const EdgeInsets.symmetric(  
+                      horizontal: 20,  
+                      vertical: 10,  
+                    ),  
+                    color: const Color(0xff191c26),  
+                    child: Padding(  
+                      padding: const EdgeInsets.all(25.0),  
+                      child: Column(  
+                        crossAxisAlignment: CrossAxisAlignment.start,  
+                        children: [  
+                          Text(  
+                            space["name"],  
+                            style: const TextStyle(  
+                              fontWeight: FontWeight.bold,  
+                              color: Colors.white,  
+                              fontFamily: "PublicSans",  
+                              fontSize: 25,  
+                            ),  
                           ),  
-                        ),  
-                        const SizedBox(  
-                          height: 20,  
-                        ),  
-                        Text(  
-                          space\["description"\],  
-                          style: const TextStyle(  
-                            fontFamily: "PublicSans",  
-                            color: Colors._white_,  
-                            fontSize: 20,  
-                          ),  
-                        ),  
-                        if (isJoinedSpace) ...\[  
                           const SizedBox(  
                             height: 20,  
                           ),  
-                          Row(  
-                            children: \[  
-                              const Icon(  
-                                Icons._fiber\_manual\_record_,  
-                                color: Colors._cyanAccent_,  
-                              ),  
-                              const SizedBox(  
-                                width: 10,  
-                              ),  
-                              Text(  
-                                "Online: ${cb.joinedChannelsMap\[channelId\]}",  
-                                style: const TextStyle(  
-                                  fontFamily: "PublicSans",  
-                                  color: Colors._white_,  
-                                  fontSize: 20,  
+                          Text(  
+                            space["description"],  
+                            style: const TextStyle(  
+                              fontFamily: "PublicSans",  
+                              color: Colors.white,  
+                              fontSize: 20,  
+                            ),  
+                          ),  
+                          if (isJoinedSpace) ...[  
+                            const SizedBox(  
+                              height: 20,  
+                            ),  
+                            Row(  
+                              children: [  
+                                const Icon(  
+                                  Icons.fiber_manual_record,  
+                                  color: Colors.cyanAccent,  
+                                ),  
+                                const SizedBox(  
+                                  width: 10,  
+                                ),  
+                                Text(  
+                                  "Online: ${cb.joinedChannelsMap[channelId]}",  
+                                  style: const TextStyle(  
+                                    fontFamily: "PublicSans",  
+                                    color: Colors.white,  
+                                    fontSize: 20,  
+                                  ),  
+                                ),  
+                              ],  
+                            ),  
+                          ],  
+                          const SizedBox(  
+                            height: 30,  
+                          ),  
+                          SizedBox(  
+                            height: 60,  
+                            width: size.width,  
+                            child: ElevatedButton(  
+                              style: ElevatedButton.styleFrom(  
+                                backgroundColor: const Color(0xff3b3b3b),  
+                                shape: RoundedRectangleBorder(  
+                                  borderRadius: BorderRadius.circular(20),  
                                 ),  
                               ),  
-                            \],  
-                          ),  
+                              onPressed: () {  
+                                if (isJoinedSpace) {  
+                                  cb.disconnectFromChannel(channelId);  
+                                } else {  
+                                  cb.joinChannel(channelId);  
+                                }  
+                              },  
+                              child: Text(  
+                                isJoinedSpace ? "Disconnect" : "Join",  
+                                style: const TextStyle(  
+                                  fontFamily: "PublicSans",  
+                                  color: Colors.white,  
+                                  fontWeight: FontWeight.bold,  
+                                  fontSize: 18,  
+                                ),  
+                              ),  
+                            ),  
+                          )  
                         \],  
-                        const SizedBox(  
-                          height: 30,  
-                        ),  
-                        SizedBox(  
-                          height: 60,  
-                          width: size.width,  
-                          child: ElevatedButton(  
-                            style: ElevatedButton._styleFrom_(  
-                              backgroundColor: const Color(0xff3b3b3b),  
-                              shape: RoundedRectangleBorder(  
-                                borderRadius: BorderRadius.circular(20),  
-                              ),  
-                            ),  
-                            onPressed: () {  
-                              if (isJoinedSpace) {  
-                                cb.disconnectFromChannel(channelId);  
-                              } else {  
-                                cb.joinChannel(channelId);  
-                              }  
-                            },  
-                            child: Text(  
-                              isJoinedSpace ? "Disconnect" : "Join",  
-                              style: const TextStyle(  
-                                fontFamily: "PublicSans",  
-                                color: Colors._white_,  
-                                fontWeight: FontWeight._bold_,  
-                                fontSize: 18,  
-                              ),  
-                            ),  
-                          ),  
-                        )  
-                      \],  
+                      ),  
                     ),  
-                  ),  
-                );  
-              },  
+                  );  
+                },  
+              ),  
             ),  
-          ),  
-        \],  
-      ),  
+          ],  
+        ),  
         onPressed: () {  
           showDialog(  
             context: context,  
             builder: (context) {  
               return NewSpaceDialog(  
                 size: size,  
-                nameCtrl: \_nameCtrl,  
-                descriptionCtrl: \_descriptionCtrl,  
+                nameCtrl: _nameCtrl,  
+                descriptionCtrl: _descriptionCtrl,  
                 cb: cb,  
               );  
             }  

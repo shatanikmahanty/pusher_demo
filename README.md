@@ -1,4 +1,6 @@
-# pusher_demo
+# Flutter: Realtime Participants Counter
+
+![image](https://user-images.githubusercontent.com/67138059/218479529-a6cb77c9-5e09-474d-8f96-227440afae4a.png)
 
 This project demonstrates subcription count event of [pusher channels](https://pusher.com/docs/channels/)
 

@@ -50,15 +50,16 @@ class ChannelBloc extends ChangeNotifier {
     });
   }
 
-  Future createSpace(String name,String description) async {
+  Future createSpace(String name, String description) async {
     _isSpaceCreationInProgress = true;
     notifyListeners();
 
-    DocumentReference ref = FirebaseFirestore.instance.collection("spaces").doc();
+    DocumentReference ref =
+        FirebaseFirestore.instance.collection("spaces").doc();
     await ref.set({
       "name": name,
       "description": description,
-      "id" : ref.id,
+      "id": ref.id,
     });
 
     _isSpaceCreationInProgress = false;
@@ -103,13 +104,13 @@ class ChannelBloc extends ChangeNotifier {
     pusher = PusherChannelsFlutter.getInstance();
     try {
       await pusher.init(
-        apiKey: "YOUR_API_KEY", ///TODO replace with your api_key
-        cluster: "YOUR_CLUSTER", ///TODO replace with your cluster
+        apiKey: "YOUR_API_KEY", // TODO: replace with your api_key
+        cluster: "YOUR_CLUSTER", // TODO: replace with your cluster
       );
 
       await pusher.connect();
     } catch (e) {
-      print(e);
+      debugPrint('$e');
     }
   }
 }
